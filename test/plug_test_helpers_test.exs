@@ -6,7 +6,7 @@ defmodule PlugTestHelpersTest do
 
   alias Plug.Conn, as: Conn
 
-  test "assert status code" do
+  test "assert_status 200" do
     conn = %Conn{status: 200}
     assert_status 200
     conn = %Conn{status: 0}
@@ -18,20 +18,6 @@ defmodule PlugTestHelpersTest do
   test "assert_status :ok" do
     conn = %Conn{status: 200}
     assert_status :ok
-    conn = %Conn{status: 0}
-    assert_fail do
-      assert_status :ok
-    end
-  end
-
-  test "assert_status code failure" do
-    conn = %Conn{status: 0}
-    assert_fail do
-      assert_status 200
-    end
-  end
-
-  test "assert_status :ok failure" do
     conn = %Conn{status: 0}
     assert_fail do
       assert_status :ok

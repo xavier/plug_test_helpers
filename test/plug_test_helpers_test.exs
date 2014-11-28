@@ -24,6 +24,13 @@ defmodule PlugTestHelpersTest do
     end
   end
 
+  test "assert_status :bogus" do
+    conn = %Conn{status: 200}
+    assert_fail "Unknown status \"bogus\"" do
+      assert_status :bogus
+    end
+  end
+
   test "assert_redirect" do
     conn = Conn.put_resp_header(%Conn{status: 302}, "location", "http://example.com")
     assert_status :redirect
@@ -67,4 +74,5 @@ defmodule PlugTestHelpersTest do
       assert_header_match "bogus", ~r/plain/
     end
   end
+
 end

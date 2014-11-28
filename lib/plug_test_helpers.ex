@@ -26,10 +26,18 @@ defmodule PlugTestHelpers do
     internal_server_error: 500,
   }
 
-  defmacro assert_status(expected_code) when is_atom(expected_code) do
+  @status_atoms Dict.keys(@atom_to_status)
+
+  defmacro assert_status(expected_code) when is_atom(expected_code) and expected_code in @status_atoms do
     expected_code = Dict.fetch!(@atom_to_status, expected_code)
     quote do
       assert var!(conn).status == unquote(expected_code)
+    end
+  end
+
+  defmacro assert_status(other) do
+    quote do
+      raise ExUnit.AssertionError, [message: "Unknown status \"#{unquote(other)}\""]
     end
   end
 

@@ -75,4 +75,19 @@ defmodule PlugTestHelpersTest do
     end
   end
 
+  test "assert_body" do
+    conn = %Conn{resp_body: "response"}
+    assert_body "response"
+    assert_fail do
+      assert_body "other"
+    end
+  end
+
+  test "assert_body_match" do
+    conn = %Conn{resp_body: "response"}
+    assert_body_match ~r/pon/
+    assert_fail do
+      assert_body_match ~r/bogus/
+    end
+  end
 end

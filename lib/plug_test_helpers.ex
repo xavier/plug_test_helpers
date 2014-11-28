@@ -77,4 +77,16 @@ defmodule PlugTestHelpers do
     end
   end
 
+  defmacro assert_body(expected_body) do
+    quote do
+      assert var!(conn).resp_body == unquote(expected_body)
+    end
+  end
+
+  defmacro assert_body_match(regex) do
+    quote do
+      assert Regex.match?(unquote(regex), var!(conn).resp_body)
+    end
+  end
+
 end

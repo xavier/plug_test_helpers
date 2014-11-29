@@ -1,5 +1,11 @@
 defmodule PlugTestHelpers do
 
+  defmacro __using__(_) do
+    quote do
+      import unquote(__MODULE__)
+    end
+  end
+
   defmacro assert_status(expected_status) when is_integer(expected_status) do
     quote do
       expected_status = unquote(expected_status)

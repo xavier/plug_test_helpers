@@ -1,8 +1,8 @@
 defmodule PlugTestHelpersTest do
   use ExUnit.Case, async: true
-
-  import PlugTestHelpers
   import AssertTestHelpers
+
+  use PlugTestHelpers
 
   alias Plug.Conn, as: Conn
 

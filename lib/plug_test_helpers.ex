@@ -1,11 +1,45 @@
 defmodule PlugTestHelpers do
 
+  @moduledoc """
+
+  Helpers to test your Plugs with ExUnit.
+
+  To import the helpers into your test case, simply add `use PlugTestHelpers`:
+
+  ```
+  defmodule do
+    use ExUnit.Case, async: true
+
+    use Plug.Test
+    use PlugTestHelpers
+
+    test "home page" do
+      conn = conn(:get, "/")
+      conn = MyPlug.call(conn, @opts)
+      assert_status 200
+    end
+
+  end
+  ```
+
+  *Important:* each `assert_*` expect the current HTTP connection (a `Plug.Conn` struct) to be  bound to a variable named `conn`.
+
+  """
+
   defmacro __using__(_) do
     quote do
       import unquote(__MODULE__)
     end
   end
 
+  @doc """
+  Passes if the current  HTTP response code matches the given expected status code.
+
+  Status code can be either:
+  - an integer (200, 404, ...)
+  - an atom (one of `:ok`, `:success`, `:created`, `:pending`, `:no_content`, `:partial`, `:permanent_redirect`, `:redirect`, `:bad_request`, `:authentication_failed`, `:forbidden`, `:not_found`, `:not_acceptable` or `:internal_server_error`)
+
+  """
   defmacro assert_status(expected_status) when is_integer(expected_status) do
     quote do
       expected_status = unquote(expected_status)
@@ -52,12 +86,14 @@ defmodule PlugTestHelpers do
     end
   end
 
+  @doc "Passes if the current HTTP response is a redirect"
   defmacro assert_redirect do
     quote do
       assert_status :redirect
     end
   end
 
+  @doc "Passes if the current HTTP response is a redirect to the given URL"
   defmacro assert_redirect(expected_url) do
     quote do
       assert_status :redirect
@@ -65,6 +101,7 @@ defmodule PlugTestHelpers do
     end
   end
 
+  @doc "Passes if the current HTTP response has a header set to the given value"
   defmacro assert_header(key, expected_value) do
     quote do
       key = unquote(key)
@@ -81,6 +118,7 @@ defmodule PlugTestHelpers do
     end
   end
 
+  @doc "Passes if the current HTTP response has a header matching the given regex"
   defmacro assert_header_match(key, regex) do
     quote do
       key = unquote(key)
@@ -93,6 +131,7 @@ defmodule PlugTestHelpers do
     end
   end
 
+  @doc "Passes if the current HTTP response body is equal to the given string"
   defmacro assert_body(expected_body) do
     quote do
       actual_body = var!(conn).resp_body
@@ -100,6 +139,7 @@ defmodule PlugTestHelpers do
     end
   end
 
+  @doc "Passes if the current HTTP response body matches the given regex"
   defmacro assert_body_match(regex) do
     quote do
       actual_body = var!(conn).resp_body

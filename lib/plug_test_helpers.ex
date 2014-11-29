@@ -1,9 +1,13 @@
 defmodule PlugTestHelpers do
 
-  defmacro assert_status(expected_code) when is_integer(expected_code) do
+  defmacro assert_status(expected_status) when is_integer(expected_status) do
     quote do
-      status = var!(conn).status
-      assert status == unquote(expected_code), "Expected status #{unquote(expected_code)}, got #{status}"
+      expected_status = unquote(expected_status)
+      actual_status   = var!(conn).status
+      assert expected_status == actual_status,
+             left: expected_status,
+             right: actual_status,
+             message: "Expected status #{expected_status}, got #{actual_status}"
     end
   end
 
@@ -29,17 +33,16 @@ defmodule PlugTestHelpers do
 
   @status_atoms Dict.keys(@atom_to_status)
 
-  defmacro assert_status(expected_code) when is_atom(expected_code) and expected_code in @status_atoms do
-    expected_code = Dict.fetch!(@atom_to_status, expected_code)
+  defmacro assert_status(expected_status) when is_atom(expected_status) and expected_status in @status_atoms do
+    expected_status = Dict.fetch!(@atom_to_status, expected_status)
     quote do
-      status = var!(conn).status
-      assert status == unquote(expected_code), "Expected status #{unquote(expected_code)}, got #{status}"
+      assert_status(unquote(expected_status))
     end
   end
 
   defmacro assert_status(other) do
     quote do
-      raise ExUnit.AssertionError, message: "Unknown status: #{unquote(other)}"
+      raise ExUnit.AssertionError, message: "Unknown status: #{inspect unquote(other)}"
     end
   end
 
@@ -58,35 +61,43 @@ defmodule PlugTestHelpers do
 
   defmacro assert_header(key, expected_value) do
     quote do
+      key = unquote(key)
+      expected_value = unquote(expected_value)
       case Plug.Conn.get_resp_header(var!(conn), unquote(key)) do
-        [value] ->
-          assert value == unquote(expected_value), "Expected header '#{unquote(key)}' to equal #{unquote(expected_value)}, got #{value}"
+        [actual_value] ->
+          assert expected_value == actual_value,
+                 left: expected_value,
+                 right: actual_value,
+                 message: "Expected header #{inspect key} to equal #{inspect expected_value}, got #{inspect actual_value}"
         _ ->
-          raise ExUnit.AssertionError, message: "Header not found: #{unquote(key)}"
+          raise ExUnit.AssertionError, message: "Header not found: #{inspect key}"
       end
     end
   end
 
   defmacro assert_header_match(key, regex) do
     quote do
-      case Plug.Conn.get_resp_header(var!(conn), unquote(key)) do
-        [value] ->
-          assert Regex.match?(unquote(regex), value)
+      key = unquote(key)
+      case Plug.Conn.get_resp_header(var!(conn), key) do
+        [actual_value] ->
+          assert Regex.match?(unquote(regex), actual_value)
         _ ->
-          raise ExUnit.AssertionError, message: "Header not found: #{unquote(key)}"
+          raise ExUnit.AssertionError, message: "Header not found: #{inspect key}"
       end
     end
   end
 
   defmacro assert_body(expected_body) do
     quote do
-      assert var!(conn).resp_body == unquote(expected_body)
+      actual_body = var!(conn).resp_body
+      assert actual_body == unquote(expected_body)
     end
   end
 
   defmacro assert_body_match(regex) do
     quote do
-      assert Regex.match?(unquote(regex), var!(conn).resp_body)
+      actual_body = var!(conn).resp_body
+      assert Regex.match?(unquote(regex), actual_body)
     end
   end
 

@@ -26,7 +26,7 @@ defmodule PlugTestHelpersTest do
 
   test "assert_status :bogus" do
     conn = %Conn{status: 200}
-    assert_fail "Unknown status: bogus" do
+    assert_fail "Unknown status: :bogus" do
       assert_status :bogus
     end
   end
@@ -37,7 +37,7 @@ defmodule PlugTestHelpersTest do
     assert_redirect
     assert_redirect "http://example.com"
 
-    assert_fail "Expected header 'location' to equal http://other.com, got http://example.com" do
+    assert_fail "Expected header \"location\" to equal \"http://other.com\", got \"http://example.com\"" do
       assert_redirect "http://other.com"
     end
 
@@ -47,12 +47,12 @@ defmodule PlugTestHelpersTest do
     end
 
     conn = %Conn{status: 302}
-    assert_fail "Header not found: location" do
+    assert_fail "Header not found: \"location\"" do
       assert_redirect "http://example.com"
     end
 
     conn = Conn.put_resp_header(%Conn{status: 302}, "location", "http://example.com")
-    assert_fail "Expected header 'location' to equal http://other.com, got http://example.com" do
+    assert_fail "Expected header \"location\" to equal \"http://other.com\", got \"http://example.com\"" do
       assert_redirect "http://other.com"
     end
   end
@@ -60,7 +60,7 @@ defmodule PlugTestHelpersTest do
   test "assert_header" do
     conn = Conn.put_resp_header(%Conn{}, "content_type", "text/plain")
     assert_header "content_type", "text/plain"
-    assert_fail "Header not found: bogus" do
+    assert_fail "Header not found: \"bogus\"" do
       assert_header "bogus", "text/plain"
     end
     assert_fail do

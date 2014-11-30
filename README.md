@@ -58,7 +58,7 @@ defmodule do
     # Will pass if the header value is set to the given string
     assert_header "content_type", "image/jpg"
     # Will pass if the header value matches the given regex
-    assert_header_match "content_type", ~r/\Aimage/jpe?g\Z/
+    assert_header_match "content_type", ~r/\Aimage\/jpe?g\Z/
   end
 
   test "body" do
